@@ -58,6 +58,18 @@ Start command:
 java -jar target/personal-attendance-tracker-0.0.1-SNAPSHOT.jar
 ```
 
+Docker option:
+
+```text
+Dockerfile path: backend/Dockerfile
+```
+
+If the deploy platform builds from inside the `backend` directory, use:
+
+```text
+Dockerfile path: Dockerfile
+```
+
 Sau khi deploy, gắn custom domain `api-attendance.ducit.io.vn` vào Railway service.
 
 ## Deploy Frontend To Vercel
