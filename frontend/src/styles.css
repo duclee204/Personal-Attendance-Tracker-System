@@ -22,6 +22,7 @@ body {
 
 button,
 input,
+select,
 textarea {
   font: inherit;
 }
@@ -113,6 +114,7 @@ h2 {
 }
 
 textarea,
+select,
 input {
   width: 100%;
   border: 1px solid #d9ded8;
@@ -131,6 +133,12 @@ textarea {
 input {
   height: 46px;
   padding: 0 12px;
+}
+
+select {
+  height: 38px;
+  min-width: 104px;
+  padding: 0 10px;
 }
 
 input:disabled {
@@ -258,6 +266,18 @@ label {
 .row-tools {
   display: grid;
   gap: 8px;
+}
+
+.admin-user-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.role-control {
+  display: grid;
+  grid-template-columns: 18px minmax(96px, 112px);
+  align-items: center;
+  gap: 8px;
+  color: #116149;
 }
 
 .empty,

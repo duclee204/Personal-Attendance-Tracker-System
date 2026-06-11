@@ -47,7 +47,7 @@ function App() {
         {tab === 'history' && <History />}
         {tab === 'schedule' && <Schedule toast={setToast} />}
         {tab === 'profile' && <Profile user={user} setUser={setUser} toast={setToast} />}
-        {tab === 'admin' && user.role === 'ADMIN' && <Admin />}
+        {tab === 'admin' && user.role === 'ADMIN' && <Admin currentUser={user} setCurrentUser={setUser} />}
       </main>
 
       <nav className="bottom-nav">
@@ -281,13 +281,22 @@ function Profile({ user, setUser, toast }) {
   );
 }
 
-function Admin() {
+function Admin({ currentUser, setCurrentUser }) {
   const [summary, setSummary] = useState(null);
   const [users, setUsers] = useState([]);
   const load = () => Promise.all([api('/api/admin/dashboard'), api('/api/admin/users')]).then(([a, b]) => { setSummary(a); setUsers(b); });
   useEffect(() => {
     load();
   }, []);
+
+  async function changeRole(user, role) {
+    const saved = await api(`/api/admin/users/${user.id}/role?value=${role}`, { method: 'PATCH' });
+    setUsers((items) => items.map((item) => item.id === saved.id ? saved : item));
+    if (saved.id === currentUser.id) {
+      localStorage.setItem('pats_user', JSON.stringify(saved));
+      setCurrentUser(saved);
+    }
+  }
 
   return (
     <>
@@ -299,9 +308,15 @@ function Admin() {
       </section>
       <section className="list">
         {users.map((u) => (
-          <article className="row" key={u.id}>
+          <article className="row admin-user-row" key={u.id}>
             <div><strong>{u.fullName}</strong><span>{u.email}</span></div>
-            <div className="right"><UsersRound size={18} /><span>{u.role}</span></div>
+            <div className="role-control">
+              <UsersRound size={18} />
+              <select value={u.role} onChange={(e) => changeRole(u, e.target.value)} title="Đổi role">
+                <option value="USER">USER</option>
+                <option value="ADMIN">ADMIN</option>
+              </select>
+            </div>
           </article>
         ))}
       </section>

@@ -83,6 +83,13 @@ public class AdminController {
     return UserResponse.from(users.save(user));
   }
 
+  @PatchMapping("/users/{id}/role")
+  public UserResponse role(@PathVariable Long id, @RequestParam Role value) {
+    User user = users.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    user.setRole(value);
+    return UserResponse.from(users.save(user));
+  }
+
   @GetMapping("/users/{id}/attendance")
   public List<AttendanceResponse> userAttendance(@PathVariable Long id) {
     User user = users.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
