@@ -1,0 +1,401 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f5f2ea;
+  color: #17231f;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    linear-gradient(180deg, rgba(17, 97, 73, 0.12), transparent 280px),
+    #f5f2ea;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  border: 0;
+  cursor: pointer;
+}
+
+.app-shell {
+  width: min(100%, 520px);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding-bottom: 88px;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 18px 12px;
+  background: rgba(245, 242, 234, 0.92);
+  backdrop-filter: blur(14px);
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 1.5rem;
+  line-height: 1.15;
+}
+
+h2 {
+  font-size: 1.8rem;
+  line-height: 1.1;
+}
+
+.eyebrow {
+  color: #66736c;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.content {
+  display: grid;
+  gap: 14px;
+  padding: 8px 14px 22px;
+}
+
+.icon-btn,
+.bottom-nav button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  color: #116149;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(38, 46, 43, 0.08);
+}
+
+.status-band {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  border-radius: 8px;
+  color: #f7fbf8;
+  background: #116149;
+  box-shadow: 0 14px 32px rgba(17, 97, 73, 0.25);
+}
+
+.status-band p {
+  color: #cae8de;
+  text-transform: capitalize;
+}
+
+textarea,
+input {
+  width: 100%;
+  border: 1px solid #d9ded8;
+  border-radius: 8px;
+  color: #17231f;
+  background: #fff;
+  outline: none;
+}
+
+textarea {
+  min-height: 88px;
+  resize: vertical;
+  padding: 12px;
+}
+
+input {
+  height: 46px;
+  padding: 0 12px;
+}
+
+input:disabled {
+  color: #6d746f;
+  background: #eef0ed;
+}
+
+.actions,
+.segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.primary,
+.secondary {
+  min-height: 46px;
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+.primary {
+  color: #fff;
+  background: #116149;
+}
+
+.status-band .primary {
+  color: #116149;
+  background: #f5f2ea;
+}
+
+.secondary {
+  color: #17231f;
+  background: #e0a33a;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.metric {
+  display: grid;
+  gap: 8px;
+  min-height: 96px;
+  padding: 16px;
+  border: 1px solid #e4e1d8;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.metric span,
+.row span,
+label {
+  color: #66736c;
+  font-size: 0.88rem;
+}
+
+.metric strong {
+  align-self: end;
+  font-size: 1.45rem;
+}
+
+.list {
+  display: grid;
+  gap: 10px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 72px;
+  padding: 14px;
+  border: 1px solid #e4e1d8;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.row div {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.row strong,
+.row span {
+  overflow-wrap: anywhere;
+}
+
+.right {
+  justify-items: end;
+  text-align: right;
+}
+
+.empty,
+.error {
+  color: #a43f3f;
+  font-size: 0.92rem;
+}
+
+.form-section {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid #e4e1d8;
+  border-radius: 8px;
+  background: #fff;
+}
+
+label {
+  display: grid;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.toggle {
+  grid-template-columns: 24px 1fr;
+  align-items: center;
+  color: #17231f;
+}
+
+.toggle input {
+  width: 20px;
+  height: 20px;
+}
+
+.day-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.day-grid button {
+  min-width: 0;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  color: #66736c;
+  background: #edf0ec;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.day-grid button.active {
+  color: #fff;
+  background: #116149;
+}
+
+.bottom-nav {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  width: min(100%, 520px);
+  margin: 0 auto;
+  padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+  border-top: 1px solid #e2dfd7;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+}
+
+.bottom-nav button {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  min-height: 54px;
+  border-radius: 8px;
+  color: #66736c;
+  background: transparent;
+  font-size: 0.72rem;
+}
+
+.bottom-nav button.active {
+  color: #116149;
+  background: #e7f1ed;
+}
+
+.auth {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 20px;
+}
+
+.auth-panel {
+  display: grid;
+  gap: 18px;
+  width: min(100%, 420px);
+  padding: 22px;
+  border: 1px solid #e4e1d8;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 20px 52px rgba(38, 46, 43, 0.12);
+}
+
+.auth-panel form {
+  display: grid;
+  gap: 12px;
+}
+
+.segmented {
+  padding: 4px;
+  border-radius: 8px;
+  background: #edf0ec;
+}
+
+.segmented button {
+  min-height: 40px;
+  border-radius: 6px;
+  color: #66736c;
+  background: transparent;
+  font-weight: 800;
+}
+
+.segmented button.active {
+  color: #116149;
+  background: #fff;
+}
+
+.toast {
+  position: fixed;
+  right: 18px;
+  bottom: 92px;
+  left: 18px;
+  z-index: 20;
+  width: min(calc(100% - 36px), 484px);
+  margin: 0 auto;
+  padding: 12px 14px;
+  border-radius: 8px;
+  color: #fff;
+  background: #17231f;
+  animation: fade 2.4s ease forwards;
+}
+
+@keyframes fade {
+  0%, 78% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(8px); }
+}
+
+@media (min-width: 760px) {
+  .app-shell {
+    width: min(100%, 860px);
+  }
+
+  .content {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+
+  .status-band,
+  .form-section,
+  .list {
+    grid-column: span 2;
+  }
+
+  .bottom-nav {
+    width: min(100%, 860px);
+  }
+}
