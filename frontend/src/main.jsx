@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BarChart3, CalendarDays, Clock3, Home, LogOut, Settings, Shield, UserRound, UsersRound } from 'lucide-react';
 import { api, clearSession, setSession } from './api';
@@ -104,7 +104,9 @@ function Dashboard({ toast }) {
   const [data, setData] = useState(null);
   const [note, setNote] = useState('');
   const load = () => api('/api/attendance/dashboard').then(setData);
-  useEffect(load, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   async function action(path) {
     await api(path, { method: 'POST', body: JSON.stringify({ note }) });
@@ -218,7 +220,9 @@ function Admin() {
   const [summary, setSummary] = useState(null);
   const [users, setUsers] = useState([]);
   const load = () => Promise.all([api('/api/admin/dashboard'), api('/api/admin/users')]).then(([a, b]) => { setSummary(a); setUsers(b); });
-  useEffect(load, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   return (
     <>
