@@ -5,9 +5,9 @@ spring:
   config:
     import: optional:file:.env[.properties]
   datasource:
-    url: jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:5432}/${DATABASE_NAME:personal_attendance}
-    username: ${DATABASE_USERNAME:admin}
-    password: ${DATABASE_PASSWORD:}
+    url: jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -23,4 +23,4 @@ spring:
 
 app:
   cors:
-    allowed-origins: ${FRONTEND_ORIGIN:http://localhost:5173,https://attendance.ducit.io.vn}
+    allowed-origins: ${FRONTEND_ORIGIN}
