@@ -24,6 +24,17 @@ public class ApiDtos {
       return new ScheduleResponse(schedule.getWorkDays(), schedule.getStartTime(), schedule.getEndTime(), schedule.isReminderEnabled(), schedule.getReminderMinutesBefore());
     }
   }
+  public record ShiftRequest(@NotNull LocalDate workDate, @NotNull ShiftType type, @NotNull LocalTime startTime, @NotNull LocalTime endTime) {}
+  public record ShiftResponse(Long id, LocalDate workDate, ShiftType type, LocalTime startTime, LocalTime endTime, boolean overnight, long plannedMinutes) {
+    public static ShiftResponse from(WorkShift shift) {
+      boolean overnight = !shift.getEndTime().isAfter(shift.getStartTime());
+      LocalDate base = LocalDate.of(2000, 1, 1);
+      LocalDateTime start = LocalDateTime.of(base, shift.getStartTime());
+      LocalDateTime end = LocalDateTime.of(overnight ? base.plusDays(1) : base, shift.getEndTime());
+      long minutes = Duration.between(start, end).toMinutes();
+      return new ShiftResponse(shift.getId(), shift.getWorkDate(), shift.getType(), shift.getStartTime(), shift.getEndTime(), overnight, shift.getType() == ShiftType.OFF ? 0 : minutes);
+    }
+  }
   public record NoteRequest(String note) {}
   public record AttendanceUpdateRequest(@NotNull LocalDate workDate, @NotNull Instant checkInAt, Instant checkOutAt, String note, boolean late) {}
   public record AttendanceResponse(Long id, LocalDate workDate, Instant checkInAt, Instant checkOutAt, String note, AttendanceStatus status, boolean late, long workedMinutes) {
@@ -32,6 +43,6 @@ public class ApiDtos {
       return new AttendanceResponse(record.getId(), record.getWorkDate(), record.getCheckInAt(), record.getCheckOutAt(), record.getNote(), record.getStatus(), record.isLate(), minutes);
     }
   }
-  public record DashboardResponse(long workedMinutesThisWeek, long workedMinutesThisMonth, long attendanceDaysThisMonth, long lateDaysThisMonth, double lateRateThisMonth, AttendanceResponse today, List<AttendanceResponse> recent) {}
+  public record DashboardResponse(long workedMinutesThisWeek, long workedMinutesThisMonth, long attendanceDaysThisMonth, long lateDaysThisMonth, double lateRateThisMonth, AttendanceResponse today, List<AttendanceResponse> recent, List<ShiftResponse> upcomingShifts) {}
   public record AdminDashboardResponse(long totalUsers, long activeUsers, long checkedInToday, long lateToday, long workedMinutesThisMonth) {}
 }

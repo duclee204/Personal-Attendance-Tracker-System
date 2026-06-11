@@ -18,6 +18,12 @@ function fmtMinutes(minutes = 0) {
   return `${h}h ${String(m).padStart(2, '0')}m`;
 }
 
+function shiftLabel(shift) {
+  if (!shift || shift.type === 'OFF') return 'Nghỉ';
+  const name = shift.type === 'DAY' ? 'Ca ngày' : shift.type === 'NIGHT' ? 'Ca đêm' : 'Custom';
+  return `${name} ${shift.startTime}-${shift.endTime}`;
+}
+
 function App() {
   const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('pats_user') || 'null'));
   const [tab, setTab] = useState('home');
@@ -132,6 +138,22 @@ function Dashboard({ toast }) {
         <Metric label="Ngày công" value={data?.attendanceDaysThisMonth || 0} />
         <Metric label="Đi muộn" value={`${Math.round(data?.lateRateThisMonth || 0)}%`} />
       </section>
+      <section className="list">
+        <p className="section-title">Lịch 7 ngày tới</p>
+        {(data?.upcomingShifts || []).map((shift) => (
+          <article className="row" key={shift.id || shift.workDate}>
+            <div>
+              <strong>{new Date(shift.workDate).toLocaleDateString('vi-VN')}</strong>
+              <span>{shiftLabel(shift)}</span>
+            </div>
+            <div className="right">
+              <b>{fmtMinutes(shift.plannedMinutes)}</b>
+              <span>{shift.overnight ? 'Qua ngày' : 'Trong ngày'}</span>
+            </div>
+          </article>
+        ))}
+        {!(data?.upcomingShifts || []).length && <p className="empty">Chưa có lịch 7 ngày tới.</p>}
+      </section>
       <RecordList rows={data?.recent || []} />
     </>
   );
@@ -233,34 +255,77 @@ function RecordList({ rows, editable = false, onSaved }) {
 }
 
 function Schedule({ toast }) {
-  const [form, setForm] = useState(null);
-  const days = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
-  useEffect(() => { api('/api/schedule').then(setForm); }, []);
-  if (!form) return null;
+  const [month, setMonth] = useState(() => new Date().toISOString().slice(0, 7));
+  const [shifts, setShifts] = useState([]);
+  const days = daysOfMonth(month);
+
+  useEffect(() => {
+    api(`/api/schedule/shifts?month=${month}`).then((rows) => {
+      const byDate = Object.fromEntries(rows.map((row) => [row.workDate, row]));
+      setShifts(daysOfMonth(month).map((date) => byDate[date] || defaultShift(date)));
+    });
+  }, [month]);
+
+  function setShift(date, patch) {
+    setShifts((items) => items.map((item) => item.workDate === date ? normalizeShift({ ...item, ...patch }) : item));
+  }
 
   async function save() {
-    const saved = await api('/api/schedule', { method: 'PUT', body: JSON.stringify(form) });
-    setForm(saved);
-    toast('Đã lưu lịch làm việc');
+    const saved = await api('/api/schedule/shifts', {
+      method: 'PUT',
+      body: JSON.stringify(shifts.map(({ workDate, type, startTime, endTime }) => ({ workDate, type, startTime, endTime })))
+    });
+    const byDate = Object.fromEntries(saved.map((row) => [row.workDate, row]));
+    setShifts(days.map((date) => byDate[date] || defaultShift(date)));
+    toast('Đã lưu lịch ca trong tháng');
   }
 
   return (
-    <section className="form-section">
-      <div className="day-grid">
-        {days.map((day) => (
-          <button key={day} className={form.workDays.includes(day) ? 'active' : ''} onClick={() => {
-            const has = form.workDays.includes(day);
-            setForm({ ...form, workDays: has ? form.workDays.filter((x) => x !== day) : [...form.workDays, day] });
-          }}>{day.slice(0, 3)}</button>
+    <section className="form-section schedule-planner">
+      <label>Tháng<input type="month" value={month} onChange={(e) => setMonth(e.target.value)} /></label>
+      <div className="shift-template-bar">
+        <span>Ca nhanh</span>
+        <button onClick={() => setShifts(days.map((date) => defaultShift(date, 'DAY')))}>Ngày 7-19</button>
+        <button onClick={() => setShifts(days.map((date) => defaultShift(date, 'NIGHT')))}>Đêm 19-7</button>
+        <button onClick={() => setShifts(days.map((date) => defaultShift(date, 'OFF')))}>Nghỉ</button>
+      </div>
+      <div className="month-grid">
+        {shifts.map((shift) => (
+          <article className={`shift-cell ${shift.type.toLowerCase()}`} key={shift.workDate}>
+            <strong>{new Date(shift.workDate).getDate()}</strong>
+            <select value={shift.type} onChange={(e) => setShift(shift.workDate, { type: e.target.value })}>
+              <option value="OFF">Nghỉ</option>
+              <option value="DAY">Ca ngày</option>
+              <option value="NIGHT">Ca đêm</option>
+              <option value="CUSTOM">Custom</option>
+            </select>
+            <div className="shift-times">
+              <input type="time" value={shift.startTime} disabled={shift.type === 'OFF'} onChange={(e) => setShift(shift.workDate, { type: 'CUSTOM', startTime: e.target.value })} />
+              <input type="time" value={shift.endTime} disabled={shift.type === 'OFF'} onChange={(e) => setShift(shift.workDate, { type: 'CUSTOM', endTime: e.target.value })} />
+            </div>
+          </article>
         ))}
       </div>
-      <label>Giờ vào<input type="time" value={form.startTime} onChange={(e) => setForm({ ...form, startTime: e.target.value })} /></label>
-      <label>Giờ ra<input type="time" value={form.endTime} onChange={(e) => setForm({ ...form, endTime: e.target.value })} /></label>
-      <label className="toggle"><input type="checkbox" checked={form.reminderEnabled} onChange={(e) => setForm({ ...form, reminderEnabled: e.target.checked })} /> Nhắc chấm công</label>
-      <label>Nhắc trước phút<input type="number" min="0" value={form.reminderMinutesBefore} onChange={(e) => setForm({ ...form, reminderMinutesBefore: Number(e.target.value) })} /></label>
-      <button className="primary" onClick={save}>Lưu lịch</button>
+      <button className="primary" onClick={save}>Lưu lịch tháng</button>
     </section>
   );
+}
+
+function daysOfMonth(month) {
+  const [year, value] = month.split('-').map(Number);
+  const last = new Date(year, value, 0).getDate();
+  return Array.from({ length: last }, (_, index) => `${month}-${String(index + 1).padStart(2, '0')}`);
+}
+
+function defaultShift(workDate, type = 'OFF') {
+  return normalizeShift({ workDate, type, startTime: '07:00', endTime: '19:00' });
+}
+
+function normalizeShift(shift) {
+  if (shift.type === 'DAY') return { ...shift, startTime: '07:00', endTime: '19:00' };
+  if (shift.type === 'NIGHT') return { ...shift, startTime: '19:00', endTime: '07:00' };
+  if (shift.type === 'OFF') return { ...shift, startTime: '07:00', endTime: '19:00' };
+  return shift;
 }
 
 function Profile({ user, setUser, toast }) {

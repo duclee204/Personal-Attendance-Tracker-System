@@ -213,6 +213,11 @@ label {
   gap: 10px;
 }
 
+.section-title {
+  color: #17231f;
+  font-weight: 800;
+}
+
 .row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
@@ -331,6 +336,79 @@ label {
 .day-grid button.active {
   color: #fff;
   background: #116149;
+}
+
+.schedule-planner {
+  grid-column: span 2;
+}
+
+.shift-template-bar {
+  display: grid;
+  grid-template-columns: auto repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  align-items: center;
+}
+
+.shift-template-bar span {
+  color: #66736c;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.shift-template-bar button {
+  min-height: 38px;
+  border-radius: 8px;
+  color: #116149;
+  background: #e7f1ed;
+  font-weight: 800;
+}
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.shift-cell {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #e4e1d8;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.shift-cell.day {
+  border-color: #91c9b6;
+  background: #edf8f4;
+}
+
+.shift-cell.night {
+  border-color: #9aa8cf;
+  background: #eef2fb;
+}
+
+.shift-cell.custom {
+  border-color: #e0a33a;
+  background: #fff8e8;
+}
+
+.shift-cell strong {
+  font-size: 0.95rem;
+}
+
+.shift-cell select,
+.shift-cell input {
+  height: 34px;
+  min-width: 0;
+  padding: 0 6px;
+  font-size: 0.78rem;
+}
+
+.shift-times {
+  display: grid;
+  gap: 6px;
 }
 
 .bottom-nav {
@@ -462,5 +540,13 @@ label {
 
   .row-tools {
     grid-template-columns: repeat(2, 42px);
+  }
+
+  .shift-template-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .month-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

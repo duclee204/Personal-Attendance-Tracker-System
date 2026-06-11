@@ -15,10 +15,12 @@ import org.springframework.web.server.ResponseStatusException;
 public class AttendanceService {
   private final AttendanceRecordRepository records;
   private final WorkScheduleRepository schedules;
+  private final WorkShiftRepository shifts;
 
-  public AttendanceService(AttendanceRecordRepository records, WorkScheduleRepository schedules) {
+  public AttendanceService(AttendanceRecordRepository records, WorkScheduleRepository schedules, WorkShiftRepository shifts) {
     this.records = records;
     this.schedules = schedules;
+    this.shifts = shifts;
   }
 
   @Transactional
@@ -28,12 +30,14 @@ public class AttendanceService {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "Already checked in today");
     }
     WorkSchedule schedule = getSchedule(user);
+    WorkShift shift = shifts.findByUserAndWorkDate(user, today).orElse(null);
     AttendanceRecord record = new AttendanceRecord();
     record.setUser(user);
     record.setWorkDate(today);
     record.setCheckInAt(Instant.now());
     record.setNote(note);
-    record.setLate(LocalTime.now().isAfter(schedule.getStartTime()));
+    LocalTime expectedStart = shift != null && shift.getType() != ShiftType.OFF ? shift.getStartTime() : schedule.getStartTime();
+    record.setLate(LocalTime.now().isAfter(expectedStart));
     return AttendanceResponse.from(records.save(record));
   }
 
@@ -92,7 +96,8 @@ public class AttendanceService {
     long monthDays = month.size();
     long lateDays = month.stream().filter(AttendanceResponse::late).count();
     AttendanceResponse todayRecord = records.findByUserAndWorkDate(user, today).map(AttendanceResponse::from).orElse(null);
-    return new DashboardResponse(sumMinutes(week), sumMinutes(month), monthDays, lateDays, monthDays == 0 ? 0 : (lateDays * 100.0 / monthDays), todayRecord, recent);
+    List<ShiftResponse> upcoming = shifts.findByUserAndWorkDateBetweenOrderByWorkDateAsc(user, today, today.plusDays(6)).stream().map(ShiftResponse::from).toList();
+    return new DashboardResponse(sumMinutes(week), sumMinutes(month), monthDays, lateDays, monthDays == 0 ? 0 : (lateDays * 100.0 / monthDays), todayRecord, recent, upcoming);
   }
 
   public WorkSchedule getSchedule(User user) {
