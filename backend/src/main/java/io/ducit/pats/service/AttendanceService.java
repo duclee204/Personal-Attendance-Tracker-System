@@ -59,6 +59,23 @@ public class AttendanceService {
     return AttendanceResponse.from(record);
   }
 
+  @Transactional
+  public AttendanceResponse update(User user, Long id, AttendanceUpdateRequest request) {
+    AttendanceRecord record = records.findById(id)
+      .filter(item -> item.getUser().getId().equals(user.getId()))
+      .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Attendance record not found"));
+    if (request.checkOutAt() != null && request.checkOutAt().isBefore(request.checkInAt())) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Check-out must be after check-in");
+    }
+    record.setWorkDate(request.workDate());
+    record.setCheckInAt(request.checkInAt());
+    record.setCheckOutAt(request.checkOutAt());
+    record.setNote(request.note());
+    record.setLate(request.late());
+    record.setStatus(request.checkOutAt() == null ? AttendanceStatus.WORKING : AttendanceStatus.COMPLETED);
+    return AttendanceResponse.from(record);
+  }
+
   public List<AttendanceResponse> history(User user, LocalDate from, LocalDate to) {
     LocalDate end = to == null ? LocalDate.now() : to;
     LocalDate start = from == null ? end.minusDays(30) : from;

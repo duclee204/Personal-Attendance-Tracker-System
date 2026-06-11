@@ -207,7 +207,7 @@ label {
 
 .row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   gap: 12px;
   align-items: center;
   min-height: 72px;
@@ -231,6 +231,33 @@ label {
 .right {
   justify-items: end;
   text-align: right;
+}
+
+.row-edit-btn {
+  width: 38px;
+  height: 38px;
+  box-shadow: none;
+  background: #e7f1ed;
+}
+
+.edit-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+}
+
+.edit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.edit-grid label:last-child {
+  grid-column: span 2;
+}
+
+.row-tools {
+  display: grid;
+  gap: 8px;
 }
 
 .empty,
@@ -397,5 +424,23 @@ label {
 
   .bottom-nav {
     width: min(100%, 860px);
+  }
+}
+
+@media (max-width: 420px) {
+  .edit-row {
+    grid-template-columns: 1fr;
+  }
+
+  .edit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .edit-grid label:last-child {
+    grid-column: auto;
+  }
+
+  .row-tools {
+    grid-template-columns: repeat(2, 42px);
   }
 }

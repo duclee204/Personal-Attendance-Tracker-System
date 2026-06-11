@@ -2,6 +2,7 @@ package io.ducit.pats.controller;
 
 import io.ducit.pats.dto.ApiDtos.*;
 import io.ducit.pats.service.*;
+import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -31,6 +32,11 @@ public class AttendanceController {
   @PatchMapping("/{id}/note")
   public AttendanceResponse note(@PathVariable Long id, @RequestBody NoteRequest request) {
     return attendance.updateNote(currentUser.get(), id, request.note());
+  }
+
+  @PutMapping("/{id}")
+  public AttendanceResponse update(@PathVariable Long id, @Valid @RequestBody AttendanceUpdateRequest request) {
+    return attendance.update(currentUser.get(), id, request);
   }
 
   @GetMapping

@@ -34,7 +34,7 @@ public class AuthService {
     user.setFullName(request.fullName());
     user.setEmail(request.email().toLowerCase());
     user.setPasswordHash(encoder.encode(request.password()));
-    user.setRole(users.count() == 0 ? Role.ADMIN : Role.USER);
+    user.setRole(Role.USER);
     users.save(user);
     WorkSchedule schedule = new WorkSchedule();
     schedule.setUser(user);

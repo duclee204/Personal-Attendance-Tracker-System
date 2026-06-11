@@ -25,6 +25,7 @@ public class ApiDtos {
     }
   }
   public record NoteRequest(String note) {}
+  public record AttendanceUpdateRequest(@NotNull LocalDate workDate, @NotNull Instant checkInAt, Instant checkOutAt, String note, boolean late) {}
   public record AttendanceResponse(Long id, LocalDate workDate, Instant checkInAt, Instant checkOutAt, String note, AttendanceStatus status, boolean late, long workedMinutes) {
     public static AttendanceResponse from(AttendanceRecord record) {
       long minutes = record.getCheckOutAt() == null ? 0 : Duration.between(record.getCheckInAt(), record.getCheckOutAt()).toMinutes();

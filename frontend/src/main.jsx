@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BarChart3, CalendarDays, Clock3, Home, LogOut, Settings, Shield, UserRound, UsersRound } from 'lucide-react';
+import { CalendarDays, Check, Clock3, Home, LogOut, Pencil, Shield, UserRound, UsersRound, X } from 'lucide-react';
 import { api, clearSession, setSession } from './api';
 import './styles.css';
 
@@ -143,23 +143,88 @@ function Metric({ label, value }) {
 
 function History() {
   const [rows, setRows] = useState([]);
-  useEffect(() => { api('/api/attendance').then(setRows); }, []);
-  return <RecordList rows={rows} />;
+  const load = () => api('/api/attendance').then(setRows);
+  useEffect(() => { load(); }, []);
+  return <RecordList rows={rows} editable onSaved={load} />;
 }
 
-function RecordList({ rows }) {
+function toDateTimeInput(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 16);
+}
+
+function toInstant(value) {
+  return value ? new Date(value).toISOString() : null;
+}
+
+function RecordList({ rows, editable = false, onSaved }) {
+  const [editingId, setEditingId] = useState(null);
+  const [draft, setDraft] = useState(null);
+
+  function startEdit(row) {
+    setEditingId(row.id);
+    setDraft({
+      workDate: row.workDate,
+      checkInAt: toDateTimeInput(row.checkInAt),
+      checkOutAt: toDateTimeInput(row.checkOutAt),
+      note: row.note || '',
+      late: row.late
+    });
+  }
+
+  async function saveEdit(id) {
+    await api(`/api/attendance/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        workDate: draft.workDate,
+        checkInAt: toInstant(draft.checkInAt),
+        checkOutAt: toInstant(draft.checkOutAt),
+        note: draft.note,
+        late: draft.late
+      })
+    });
+    setEditingId(null);
+    setDraft(null);
+    onSaved?.();
+  }
+
   return (
     <section className="list">
       {rows.map((row) => (
-        <article className="row" key={row.id}>
-          <div>
-            <strong>{new Date(row.workDate).toLocaleDateString('vi-VN')}</strong>
-            <span>{row.note || 'Không có ghi chú'}</span>
-          </div>
-          <div className="right">
-            <b>{fmtMinutes(row.workedMinutes)}</b>
-            <span>{row.late ? 'Muộn' : row.status === 'WORKING' ? 'Đang làm' : 'Đúng giờ'}</span>
-          </div>
+        <article className={editingId === row.id ? 'row edit-row' : 'row'} key={row.id}>
+          {editingId === row.id ? (
+            <>
+              <div className="edit-grid">
+                <label>Ngày<input type="date" value={draft.workDate} onChange={(e) => setDraft({ ...draft, workDate: e.target.value })} /></label>
+                <label>Giờ vào<input type="datetime-local" value={draft.checkInAt} onChange={(e) => setDraft({ ...draft, checkInAt: e.target.value })} /></label>
+                <label>Giờ ra<input type="datetime-local" value={draft.checkOutAt} onChange={(e) => setDraft({ ...draft, checkOutAt: e.target.value })} /></label>
+                <label>Ghi chú<input value={draft.note} onChange={(e) => setDraft({ ...draft, note: e.target.value })} /></label>
+                <label className="toggle"><input type="checkbox" checked={draft.late} onChange={(e) => setDraft({ ...draft, late: e.target.checked })} /> Đi muộn</label>
+              </div>
+              <div className="row-tools">
+                <button className="icon-btn" title="Lưu" onClick={() => saveEdit(row.id)}><Check size={18} /></button>
+                <button className="icon-btn" title="Hủy" onClick={() => { setEditingId(null); setDraft(null); }}><X size={18} /></button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div>
+                <strong>{new Date(row.workDate).toLocaleDateString('vi-VN')}</strong>
+                <span>{row.note || 'Không có ghi chú'}</span>
+              </div>
+              <div className="right">
+                <b>{fmtMinutes(row.workedMinutes)}</b>
+                <span>{row.late ? 'Muộn' : row.status === 'WORKING' ? 'Đang làm' : 'Đúng giờ'}</span>
+              </div>
+              {editable && (
+                <button className="icon-btn row-edit-btn" title="Sửa lịch sử" onClick={() => startEdit(row)}>
+                  <Pencil size={18} />
+                </button>
+              )}
+            </>
+          )}
         </article>
       ))}
       {!rows.length && <p className="empty">Chưa có dữ liệu.</p>}
