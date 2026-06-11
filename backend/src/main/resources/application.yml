@@ -5,10 +5,10 @@ spring:
   config:
     import: optional:file:.env[.properties]
   datasource:
-    url: ${DATABASE_JDBC_URL:jdbc:postgresql://${DATABASE_HOST:${PGHOST:localhost}}:${DATABASE_PORT:${PGPORT:5432}}/${DATABASE_NAME:${PGDATABASE:personal_attendance}}}
-    username: ${DATABASE_USERNAME:${PGUSER:admin}}
-    password: ${DATABASE_PASSWORD:${PGPASSWORD:}}
-    driver-class-name: ${DATABASE_DRIVER:org.postgresql.Driver}
+    url: jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:5432}/${DATABASE_NAME:personal_attendance}
+    username: ${DATABASE_USERNAME:admin}
+    password: ${DATABASE_PASSWORD:}
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
