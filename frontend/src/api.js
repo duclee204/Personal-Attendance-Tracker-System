@@ -1,4 +1,8 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const DEFAULT_API_BASE = window.location.hostname === 'localhost'
+  ? 'http://localhost:8080'
+  : 'https://be-personal-attendance-tracker-system.onrender.com';
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE;
 
 export function getToken() {
   return localStorage.getItem('pats_token');
