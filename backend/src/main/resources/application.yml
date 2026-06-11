@@ -2,11 +2,13 @@ server:
   port: ${PORT:8080}
 
 spring:
+  config:
+    import: optional:file:.env[.properties]
   datasource:
-    url: ${DATABASE_URL:jdbc:h2:mem:pats;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1}
-    username: ${DATABASE_USERNAME:sa}
-    password: ${DATABASE_PASSWORD:}
-    driver-class-name: ${DATABASE_DRIVER:org.h2.Driver}
+    url: ${DATABASE_URL:jdbc:postgresql://${DATABASE_HOST:${PGHOST:localhost}}:${DATABASE_PORT:${PGPORT:5432}}/${DATABASE_NAME:${PGDATABASE:personal_attendance}}}
+    username: ${DATABASE_USERNAME:${PGUSER:admin}}
+    password: ${DATABASE_PASSWORD:${PGPASSWORD:}}
+    driver-class-name: ${DATABASE_DRIVER:org.postgresql.Driver}
   jpa:
     hibernate:
       ddl-auto: update
