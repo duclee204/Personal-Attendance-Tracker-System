@@ -2,9 +2,9 @@
 
 MVP full-stack cho mô hình:
 
-- Frontend PWA: Vercel, domain `attendance.ducit.io.vn`
-- Backend Spring Boot: Railway, domain `api-attendance.ducit.io.vn`
-- Database PostgreSQL: Railway
+- Frontend PWA: Vercel, URL `https://fe-personal-attendance-tracker-syst.vercel.app`
+- Backend Spring Boot: Render, URL `https://be-personal-attendance-tracker-system.onrender.com`
+- Database PostgreSQL: Render
 
 ## Structure
 
@@ -31,19 +31,20 @@ npm run dev
 
 App mặc định gọi API ở `http://localhost:8080`.
 
-## Deploy Backend To Railway
+## Deploy Backend To Render
 
-Create Railway service from `backend`.
+Create Render web service from `backend`.
 
 Set variables:
 
 ```text
 PORT=8080
-FRONTEND_ORIGIN=https://attendance.ducit.io.vn
-DATABASE_URL=jdbc:postgresql://<host>:<port>/<database>
-DATABASE_USERNAME=<postgres-user>
+FRONTEND_ORIGIN=https://fe-personal-attendance-tracker-syst.vercel.app
+DATABASE_HOST=<render-postgres-host>
+DATABASE_PORT=5432
+DATABASE_NAME=personal_attendance
+DATABASE_USERNAME=admin
 DATABASE_PASSWORD=<postgres-password>
-DATABASE_DRIVER=org.postgresql.Driver
 ```
 
 Build command:
@@ -70,7 +71,7 @@ If the deploy platform builds from inside the `backend` directory, use:
 Dockerfile path: Dockerfile
 ```
 
-Sau khi deploy, gắn custom domain `api-attendance.ducit.io.vn` vào Railway service.
+Backend hiện đang chạy tại `https://be-personal-attendance-tracker-system.onrender.com`.
 
 ## Deploy Frontend To Vercel
 
@@ -79,12 +80,12 @@ Create Vercel project from `frontend`.
 Set variable:
 
 ```text
-VITE_API_BASE_URL=https://api-attendance.ducit.io.vn
+VITE_API_BASE_URL=https://be-personal-attendance-tracker-system.onrender.com
 ```
 
 Build command and output are already defined in `frontend/vercel.json`.
 
-Sau khi deploy, gắn custom domain `attendance.ducit.io.vn` vào Vercel project.
+Frontend hiện đang chạy tại `https://fe-personal-attendance-tracker-syst.vercel.app`.
 
 ## API Summary
 
